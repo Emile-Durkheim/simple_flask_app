@@ -3,18 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = postgresql://username:password@localhost:5432/bookdb
 
-if uri := os.environ.get('SQLALCHEMY_DATABASE_URI'):
-    app.config['SQLALCHEMY_DATABASE_URI'] = uri
-    db = SQLAlchemy(app)
-else:
-    raise EnvironmentError("Couldn't find 'SQLALCHEMY_DATABASE_URI' environment variable")
+db = SQLAlchemy(app)
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    author = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(200), nullable=False)
+    title = db.Column(db.String(1024), nullable=False)
+    author = db.Column(db.String(1024), nullable=False)
+    description = db.Column(db.String(5012), nullable=False)
 
     def __repr__(self):
         return f'<Book {self.title}>'
