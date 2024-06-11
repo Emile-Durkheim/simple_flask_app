@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = postgresql://username:password@localhost:5432/bookdb
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://webserver:YOUR_PASSWORD_HERE@localhost:5432/bookdb"
 
 db = SQLAlchemy(app)
 
@@ -32,6 +32,15 @@ def index():
     
     books = Book.query.all()
     return render_template('index.html', books=books)
+
+@app.route('/book', methods=['POST'])
+def rest_add_book():
+    json = request.get_json()
+    new_book = Book(title=json['title'], author=json['author'], description=json['description'])
+
+    db.session.add(new_book)
+    db.session.commit()
+    return {}, 200
 
 if __name__ == '__main__':
     app.run(debug=True)
