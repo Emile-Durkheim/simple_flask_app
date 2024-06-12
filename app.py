@@ -1,9 +1,29 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
+from logging.config import dictConfig
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://webserver:YOUR_PASSWORD_HERE@localhost:5432/bookdb"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://webserver:webserver@localhost:5432/bookdb"
+
+# Logging config
+dictConfig({
+    "version": 1,
+    "formatters": {
+        "default": {
+            "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+        }
+    },
+    "handlers": {
+        "wsgi": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://flask.logging.wsgi_errors_stream",
+            "formatter": "default",
+        }
+    },
+    "root": {"level": "DEBUG", "handlers": ["wsgi"]},
+})
+
 
 db = SQLAlchemy(app)
 
@@ -40,7 +60,7 @@ def rest_add_book():
 
     db.session.add(new_book)
     db.session.commit()
-    return {}, 200
+    return 'ok', 200
 
 if __name__ == '__main__':
     app.run(debug=True)
